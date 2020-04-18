@@ -1,0 +1,122 @@
+#
+# Easiest way to work with this file, from an updated Ubuntu 16.04 LTS image
+# 1.   create a non-root user with sudo priv and perform following steps as non-root
+# 2.  `sudo apt-get update`
+# 3.  `sudo apt-get install snapcraft python build-essential`
+# 4.  `snapcraft stage`
+# 5.  `snapcraft snap`
+
+name: workbase-server
+version: v0.0.18
+summary: WorkBase server
+description: Have your own network, built with Meteor.
+grade: stable
+confinement: strict
+assumes: [snapd2.21]
+architectures:
+  - build-on: [armhf]
+apps:
+    workbase-server:
+        command: startWorkBase
+        daemon: simple
+        plugs: [network, network-bind]
+    workbase-mongo:
+        command: startmongo
+        daemon: simple
+        plugs: [network, network-bind]
+    workbase-caddy:
+        command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile
+        daemon: simple
+        plugs: [network, network-bind]
+    mongo:
+        command: env LC_ALL=C mongo
+        plugs: [network]
+    restoredb:
+        command: env LC_ALL=C restoredb
+        plugs: [network]
+    backupdb:
+        command: env LC_ALL=C backupdb
+        plugs: [network]
+    initcaddy:
+        command: env LC_ALL=C initcaddy
+hooks:
+    configure:
+        plugs: [network]
+parts:
+    node:
+        plugin: dump 
+        override-build: |
+            ./resources/preparenode
+            snapcraftctl build
+        build-packages:
+            # For fibers
+            - python
+            - build-essential
+            - nodejs
+    workbase-server:
+        build-packages:
+            - curl
+        plugin: dump
+        override-build: |
+            ./resources/prepareWorkBase
+            snapcraftctl build
+        after: [node]
+        source: .
+        stage-packages:
+            - graphicsmagick
+            - execstack
+            - fontconfig-config
+        stage:
+            - programs
+            - main.js
+            - .node_version.txt
+            - etc
+            - usr
+            - star.json
+    mongodb:
+        build-packages:
+            - wget
+        source: ./
+        override-build: |
+            ./resources/preparemongo
+            snapcraftctl build
+        plugin: dump
+        stage-packages:
+            - libssl1.0.0
+        prime:
+            - usr
+            - bin
+            - lib
+    scripts:
+        plugin: dump
+        source: resources/
+        organize:
+            backupdb: bin/backupdb
+            restoredb: bin/restoredb
+            startmongo: bin/startmongo
+            startWorkBase: bin/startWorkBase
+            initreplset.js: bin/initreplset.js
+            Caddyfile: bin/Caddyfile
+            initcaddy: bin/initcaddy
+        prime:
+            - bin
+    caddy:
+        override-build: |
+            ./resources/preparecaddy
+            snapcraftctl build
+        plugin: dump
+        source: ./
+        prime:
+            - bin
+        organize:
+            caddy: bin/caddy
+        after: [mongodb]
+    hooks:
+        plugin: nil
+        stage-packages:
+            - dnsutils
+            - curl
+        prime:
+            - usr
+            - lib
+
