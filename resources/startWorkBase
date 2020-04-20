@@ -7,7 +7,7 @@ function start_workbase {
 	export DEPLOY_METHOD=snap
 	export NODE_ENV=production
 	export BABEL_CACHE_DIR=/tmp
-	export ROOT_URL=http://localhost
+	export ROOT_URL="$(snapctl get root-url)"
   export PORT="$(snapctl get port)"
   export MONGO_URL="$(snapctl get mongo-url)"
   export MONGO_OPLOG_URL="$(snapctl get mongo-oplog-url)"

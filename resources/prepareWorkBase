@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl -SLf "https://github.com/wanglian/workbase-server/releases/download/v0.0.18/workbase.tar.gz" -o workbase.tar.gz
+curl -SLf "https://workbase.s3.ca-central-1.amazonaws.com/workbase.tar.gz" -o workbase.tar.gz
 
 tar xf workbase.tar.gz --strip 1
 
@@ -31,4 +31,5 @@ npm i
 
 # not know why, sometimes change
 # rm npm/node_modules/meteor/raix_push/node_modules/husky/.node_modules-garbage-110lol.3kudxo/strip-indent
-rm npm/node_modules/meteor/raix_push/node_modules/husky/.node_modules-garbage-1448af4.zfbyl/strip-indent
+rm -rf npm/node_modules/meteor/raix_push/node_modules/husky/.node_modules-garbage-*
+rm -rf rm npm/node_modules/meteor/ostrio_files/node_modules/request-libcurl/.node_modules-garbage-*

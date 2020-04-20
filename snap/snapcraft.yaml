@@ -7,13 +7,15 @@
 # 5.  `snapcraft snap`
 
 name: workbase-server
-version: v0.0.18
+version: v0.1.4
 summary: WorkBase server
 description: Have your own network, built with Meteor.
 grade: stable
 confinement: strict
 assumes: [snapd2.21]
 architectures:
+  # amd64
+  # armhf - raspberrypi
   - build-on: [armhf]
 apps:
     workbase-server:
@@ -56,6 +58,8 @@ parts:
     workbase-server:
         build-packages:
             - curl
+            - wget
+            - jq
         plugin: dump
         override-build: |
             ./resources/prepareWorkBase
