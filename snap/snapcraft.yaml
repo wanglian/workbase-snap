@@ -15,8 +15,9 @@ confinement: strict
 assumes: [snapd2.21]
 architectures:
   # amd64
-  # armhf - raspberrypi
-  - build-on: [armhf]
+  # armhf - raspberrypi 32 bit
+  # arm64 - raspberrypi 64 bit
+  - build-on: [arm64]
 apps:
     workbase-server:
         command: startWorkBase
